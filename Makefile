@@ -64,13 +64,13 @@ $(WORK)/env_pkg.sdb           : ./Env/env_pkg.sv
 	xvlog -sv $< -L uvm --include ./Env
 
 $(WORK)/sequence_lib_pkg.sdb  : $(WORK)/agent_pkg.sdb
-$(WORK)/sequence_lib_pkg.sdb  : ./Seq_lib/sequence_lib_pkg.sv
-	xvlog -sv $< -L uvm --include ./Seq_lib
+$(WORK)/sequence_lib_pkg.sdb  : ./Seq/sequence_lib_pkg.sv
+	xvlog -sv $< -L uvm --include ./Seq
 
 $(WORK)/test_lib_pkg.sdb      : $(WORK)/env_pkg.sdb
 $(WORK)/test_lib_pkg.sdb      : $(WORK)/sequence_lib_pkg.sdb
-$(WORK)/test_lib_pkg.sdb      : ./Test_lib/test_lib_pkg.sv
-	xvlog -sv $< -L uvm --include ./Test_lib
+$(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv
+	xvlog -sv $< -L uvm --include ./Test
 
 $(WORK)/in_bus_if.sdb         : ./TB/in_bus_if.sv
 	xvlog -sv $< -L uvm

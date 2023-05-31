@@ -1,45 +1,27 @@
 VIVADO_DIR := /tools/Xilinx/Vivado/2022.2/bin
 VLOG       := $(VIVADO_DIR)/xvlog
 ELAB       := $(VIVADO_DIR)/xelab
+SIM        := $(VIVADO_DIR)/xsim
 XSC        := $(VIVADO_DIR)/xsc
 
-TOP    := tb_top
-WORK   := ./xsim.dir/work
-TARGET := $(WORK).$(TOP)/axsim ./axsim.sh
+TOP     := tb_top
+WORK    := ./xsim.dir/work
+TARGET  := ./xsim.dir/$(TOP).batch/axsim ./axsim.sh
+TARGET2 := ./xsim.dir/$(TOP).debug/xsimk
 
  TEST_NAME := simple_test
 #TEST_NAME := dpi_test1
 #TEST_NAME := dpi_test2
 #TEST_NAME := unite_test
 
-.PHONY : all
+.PHONY : run gui all
 all : simple_test dpi_test1 dpi_test2 unite_test
+run : $(TARGET)
+	./axsim.sh          -testplusarg "UVM_TESTNAME=$(TEST_NAME)"
+gui : $(TARGET2)
+	$(SIM) $(TOP).debug -testplusarg "UVM_TESTNAME=$(TEST_NAME)" -gui
 
-.PHONY : run
-run   : build
-	./axsim.sh --testplusarg "UVM_TESTNAME=$(TEST_NAME)"
-
-.PHONY : build
-build : $(TARGET)
-
-$(TARGET) : $(WORK)/dut.sdb
-$(TARGET) : $(WORK)/params_pkg.sdb
-$(TARGET) : $(WORK)/agent_pkg.sdb
-$(TARGET) : $(WORK)/result_agent_pkg.sdb
-$(TARGET) : $(WORK)/env_pkg.sdb
-$(TARGET) : $(WORK)/sequence_lib_pkg.sdb
-$(TARGET) : $(WORK)/test_lib_pkg.sdb
-$(TARGET) : $(WORK)/in_bus_if.sdb
-$(TARGET) : $(WORK)/out_bus_if.sdb
-$(TARGET) : $(WORK)/tb_top.sdb
-$(TARGET) : ./dpi_lib.so
-	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps --standalone -sv_lib dpi_lib
-
-build_c : ./dpi_lib.so
-./dpi_lib.so : ./C/dpi_C_seq.cpp ./C/dpi_get_val.cpp ./C/C_Program.cpp
-	$(XSC) -o $@ $^
-#	g++ -m32 -fPIC -shared -o dpi_lib.so $^
-
+.PHONY : simple_test dpi_test1 dpi_test2 unite_test
 simple_test :
 	make run TEST_NAME=simple_test
 dpi_test1 :
@@ -48,6 +30,32 @@ dpi_test2 :
 	make run TEST_NAME=dpi_test2
 unite_test :
 	make run TEST_NAME=unite_test
+
+.PHONY : build build_c
+build : 
+	make -B $(TARGET)
+build_c :
+	make -B ./dpi_lib.so
+
+COMPILE_FILES := $(WORK)/dut.sdb
+COMPILE_FILES += $(WORK)/params_pkg.sdb
+COMPILE_FILES += $(WORK)/agent_pkg.sdb
+COMPILE_FILES += $(WORK)/result_agent_pkg.sdb
+COMPILE_FILES += $(WORK)/env_pkg.sdb
+COMPILE_FILES += $(WORK)/sequence_lib_pkg.sdb
+COMPILE_FILES += $(WORK)/test_lib_pkg.sdb
+COMPILE_FILES += $(WORK)/in_bus_if.sdb
+COMPILE_FILES += $(WORK)/out_bus_if.sdb
+COMPILE_FILES += $(WORK)/tb_top.sdb
+$(TARGET)  : $(COMPILE_FILES) ./dpi_lib.so
+	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -snapshot $(TOP).batch -standalone
+$(TARGET2) : $(COMPILE_FILES) ./dpi_lib.so
+	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -snapshot $(TOP).debug -debug all
+
+./dpi_lib.so : ./C/dpi_C_seq.cpp ./C/dpi_get_val.cpp ./C/C_Program.cpp
+	$(XSC) -o $@ $^
+#	g++ -m32 -fPIC -shared -o dpi_lib.so $^
+
 
 
 #--------------------------------------------------------------------------

@@ -18,6 +18,7 @@ TARGET2 := ./xsim.dir/$(TOP).debug/xsimk
 all : simple_test dpi_test1 dpi_test2 unite_test
 run : $(TARGET)
 	./axsim.sh          -testplusarg "UVM_TESTNAME=$(TEST_NAME)"
+	mv xsim.log xsim_$(TEST_NAME).log
 gui : $(TARGET2)
 	$(SIM) $(TOP).debug -testplusarg "UVM_TESTNAME=$(TEST_NAME)" -gui
 
@@ -71,18 +72,18 @@ $(WORK)/agent_pkg.sdb         : ./Agent/agent_pkg.sv
 $(WORK)/result_agent_pkg.sdb  : ./Result_Agent/result_agent_pkg.sv
 	$(VLOG) -sv $< -L uvm --include ./Result_Agent
 
-$(WORK)/env_pkg.sdb           : $(WORK)/agent_pkg.sdb
-$(WORK)/env_pkg.sdb           : $(WORK)/result_agent_pkg.sdb
 $(WORK)/env_pkg.sdb           : ./Env/env_pkg.sv
+	make $(WORK)/agent_pkg.sdb
+	make $(WORK)/result_agent_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Env
 
-$(WORK)/sequence_lib_pkg.sdb  : $(WORK)/agent_pkg.sdb
 $(WORK)/sequence_lib_pkg.sdb  : ./Seq/sequence_lib_pkg.sv
+	make $(WORK)/agent_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Seq
 
-$(WORK)/test_lib_pkg.sdb      : $(WORK)/env_pkg.sdb
-$(WORK)/test_lib_pkg.sdb      : $(WORK)/sequence_lib_pkg.sdb
 $(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv
+	make $(WORK)/env_pkg.sdb
+	make $(WORK)/sequence_lib_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Test
 
 $(WORK)/in_bus_if.sdb         : ./TB/in_bus_if.sv
@@ -91,9 +92,9 @@ $(WORK)/in_bus_if.sdb         : ./TB/in_bus_if.sv
 $(WORK)/out_bus_if.sdb        : ./TB/out_bus_if.sv
 	$(VLOG) -sv $< -L uvm
 
-$(WORK)/tb_top.sdb            : $(WORK)/params_pkg.sdb
-$(WORK)/tb_top.sdb            : $(WORK)/test_lib_pkg.sdb
 $(WORK)/tb_top.sdb            : ./TB/tb_top.sv
+	make $(WORK)/params_pkg.sdb
+	make $(WORK)/test_lib_pkg.sdb
 	$(VLOG) -sv $< -L uvm
 
 .PHONY: clean

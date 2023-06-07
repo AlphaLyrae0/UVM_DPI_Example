@@ -1,16 +1,13 @@
-`uvm_analysis_imp_decl(_in)
-`uvm_analysis_imp_decl(_out)
  
-//class scoreboard #(type Tin = uvm_sequence_item, type Tout = uvm_sequence_item) extends uvm_scoreboard;
-//  `uvm_component_param_utils(scoreboard)
 class scoreboard  extends uvm_scoreboard;
   `uvm_component_utils(scoreboard)
 
-  uvm_analysis_imp_in   #(in_item , scoreboard)  in_port;
-  uvm_analysis_imp_out  #(out_item, scoreboard) out_port;
+  uvm_analysis_export#( in_item)              in_port;
+  uvm_analysis_imp   #(out_item, scoreboard) out_port;
+
+  uvm_tlm_analysis_fifo#(in_item) q_in;
  
   int m_matches, m_mismatches, m_unexpected;
-  in_item  q_in[$];
  
   function new( string name , uvm_component parent) ;
     super.new( name , parent );
@@ -22,26 +19,28 @@ class scoreboard  extends uvm_scoreboard;
   virtual function void build_phase( uvm_phase phase );
     in_port   = new("in_port" , this);
     out_port  = new("out_port", this);
-  endfunction
- 
-  virtual function void write_in(in_item txn);    
-    q_in.push_back(txn);
+    q_in      = new("q_in"    , this);
   endfunction
 
-  virtual function void write_out(out_item txn);    
-    if (q_in.size() > 0) compare_trans(txn);
+  virtual function void connect_phase( uvm_phase phase );
+    in_port.connect(q_in.analysis_export);
+  endfunction
+ 
+  virtual function void write(out_item txn);    
+    in_item  tr_in;
+
+    if ( q_in.try_get(tr_in) )
+      compare_trans(tr_in, txn, create_exp(tr_in) );
     else begin
     //`uvm_error( "Unexpected DUT output : ", txn.convert2string() )
       `uvm_error( "Unexpected DUT output : ", txn.sprint() )
       m_unexpected++;
+      return;
     end
+
   endfunction
 
-  protected virtual function void compare_trans(out_item tr_dut);
-    in_item  txn_in;
-    out_item tr_exp;
-    txn_in = q_in.pop_front();
-    tr_exp = create_exp( txn_in );
+  protected virtual function void compare_trans(in_item txn_in, out_item tr_dut, tr_exp);
     if (!tr_exp.compare(tr_dut)) begin
     //`uvm_error( "Comparator Mismatch", $sformatf("\nDUT Input : %s \nDUT Output : %s \nExpected : %s ", txn_in.convert2string(), tr_dut.convert2string(), tr_exp.convert2string() ) )
       `uvm_error( "Comparator Mismatch", $sformatf("\nDUT Input : \n%s \nDUT Output : \n%s \nExpected : \n%s ", txn_in.sprint(), tr_dut.sprint(), tr_exp.sprint() ) )

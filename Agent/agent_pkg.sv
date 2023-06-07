@@ -10,19 +10,6 @@ package agent_pkg;
   `include "agent_monitor.svh"
   `include "agent.svh"
 
-  // -dpi_lrm_context at elaboration is(was) necessary for export "DPI-C" in a pacakge 
-
-  /*----
-  /---------- For dpi_C_seq ---------------
-  import "DPI-C" context task dpi_C_seq();
-  export "DPI-C" task bus_drive;
-
-  task bus_drive(input int Val_A, Val_B);
-    params_pkg::i_vif.bus_drive(Val_A, Val_B);
-  endtask : bus_drive
-  //--------------------------------------
-  ----*/
-
 //import "DPI-C" pure    function void dpi_get_val(inout int Val_A, Val_B);
   import "DPI-C" context function void dpi_get_val(inout int Val_A, Val_B);
 

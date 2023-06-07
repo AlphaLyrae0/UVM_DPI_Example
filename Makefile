@@ -55,7 +55,7 @@ $(TARGET2) : $(COMPILE_FILES)
 	make ./dpi_lib.so
 	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -snapshot $(TOP).debug -debug all
 
-./dpi_lib.so : ./C/dpi_C_seq.cpp ./C/dpi_get_val.cpp ./C/C_Program.cpp
+./dpi_lib.so : ./C/dpi_get_val.cpp ./C/C_Program.cpp
 	$(XSC) -o $@ $^
 #	g++ -m32 -fPIC -shared -o dpi_lib.so $^
 

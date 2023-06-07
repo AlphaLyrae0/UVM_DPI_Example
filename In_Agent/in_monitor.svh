@@ -1,14 +1,14 @@
 
-class agent_monitor extends uvm_monitor;
-  `uvm_component_utils(agent_monitor)
+class in_monitor extends uvm_monitor;
+  `uvm_component_utils(in_monitor)
 
   function new(string name, uvm_component parent);
     super.new(name, parent);
   endfunction
 
-  virtual in_bus_if myif;
+  virtual in_bus_if v_if;
 
-  uvm_analysis_port #(agent_item) ap;
+  uvm_analysis_port #(in_item) ap;
 
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
@@ -17,25 +17,25 @@ class agent_monitor extends uvm_monitor;
  
 //function void connect_phase(uvm_phase phase);
 //  super.connect_phase(phase);
-//  myif = params_pkg::v_myif;
+//  v_if = params_pkg::v_myif;
 //endfunction: connect_phase
 
   task run_phase(uvm_phase phase);
   //super.run_phase(phase);
-    @(posedge myif.rstn);
-    forever @(posedge myif.clk) check_bus();
+    @(posedge v_if.rstn);
+    forever @(posedge v_if.clk) check_bus();
   endtask
 
-  agent_item tr;
+  in_item tr;
   virtual function void check_bus();
-    if(myif.en) begin
-      tr = agent_item::type_id::create("tr");
+    if(v_if.en) begin
+      tr = in_item::type_id::create("tr");
       this.begin_tr(tr);
-      tr.Val_A = this.myif.Val_A;
-      tr.Val_B = this.myif.Val_B;
-    //`uvm_info("Monitor", $sformatf("Val_A  : %4d ", this.myif.Val_A ), UVM_MEDIUM)
-    //`uvm_info("Monitor", $sformatf("Val_B  : %4d ", this.myif.Val_B ), UVM_MEDIUM)
-    //`uvm_info("Monitor", $sformatf("Result : %4d ", this.myif.Result), UVM_MEDIUM)
+      tr.Val_A = this.v_if.Val_A;
+      tr.Val_B = this.v_if.Val_B;
+    //`uvm_info("Monitor", $sformatf("Val_A  : %4d ", this.v_if.Val_A ), UVM_MEDIUM)
+    //`uvm_info("Monitor", $sformatf("Val_B  : %4d ", this.v_if.Val_B ), UVM_MEDIUM)
+    //`uvm_info("Monitor", $sformatf("Result : %4d ", this.v_if.Result), UVM_MEDIUM)
     //`uvm_info("Monitor", $sformatf("Val_A  : %4d ", tr.Val_A ), UVM_MEDIUM)
     //`uvm_info("Monitor", $sformatf("Val_A  : %4d ", tr.Val_B ), UVM_MEDIUM)
     //`uvm_info("Monitor", tr.convert2string(), UVM_LOW)

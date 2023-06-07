@@ -1,5 +1,5 @@
 
-class api_write_sequence extends uvm_sequence #(agent_item);
+class api_write_sequence extends uvm_sequence #(in_item);
  
   function new(string name="");
     super.new(name);
@@ -10,7 +10,7 @@ class api_write_sequence extends uvm_sequence #(agent_item);
   `uvm_object_utils(api_write_sequence)
 
   virtual task body();
-    this.req = agent_item::type_id::create("req");
+    this.req = in_item::type_id::create("req");
     this.start_item(this.req);
     this.req.Val_A = this.Val_A;
     this.req.Val_B = this.Val_B;

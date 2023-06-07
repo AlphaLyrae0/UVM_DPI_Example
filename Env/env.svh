@@ -9,22 +9,22 @@ class env extends uvm_env;
 
   uvm_sequencer_base  m_sequencer;
 
-  agent         agnt     ;
-  result_agent  rslt_agnt;
-  scoreboard    scrbd    ;
+  in_agent      i_agnt;
+  out_agent     o_agnt;
+  scoreboard    m_sb  ;
 
   virtual function void build_phase(uvm_phase phase);
     super.build();
-    agnt       = agent       ::type_id::create("agnt"     , this);
-    rslt_agnt  = result_agent::type_id::create("rslt_agnt", this);
-    scrbd      = scoreboard  ::type_id::create("scrbd"    , this);
+    i_agnt = in_agent  ::type_id::create("i_agnt", this);
+    o_agnt = out_agent ::type_id::create("o_agnt", this);
+    m_sb   = scoreboard::type_id::create("m_sb"  , this);
   endfunction
 
   virtual function void connect_phase(uvm_phase phase);
-    m_sequencer   = agnt.seqr; 
+    m_sequencer = i_agnt.m_sqr; 
 
-    agnt     .mon_ap.connect(scrbd.in_port );
-    rslt_agnt.mon_ap.connect(scrbd.out_port);
+    i_agnt.mon_ap.connect(m_sb.in_port );
+    o_agnt.mon_ap.connect(m_sb.out_port);
      
   endfunction
 

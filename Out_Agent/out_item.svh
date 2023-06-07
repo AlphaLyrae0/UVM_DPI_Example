@@ -1,5 +1,5 @@
 
-class result_item extends uvm_sequence_item;
+class out_item extends uvm_sequence_item;
 
   function new(string name="");
     super.new(name);
@@ -7,8 +7,8 @@ class result_item extends uvm_sequence_item;
 
   rand  int Val;
 
-//`uvm_object_utils(result_item) 
-  `uvm_object_utils_begin(result_item) 
+//`uvm_object_utils(out_item) 
+  `uvm_object_utils_begin(out_item) 
     `uvm_field_int (Val, UVM_ALL_ON | UVM_DEC)
   `uvm_object_utils_end
 
@@ -35,7 +35,7 @@ class result_item extends uvm_sequence_item;
 //function void do_copy(uvm_object rhs = null);
 //  super.do_copy(rhs);
 //  begin
-//    result_item to;
+//    out_item to;
 //    $cast(to,rhs);
 //    to.Val = this.Val;
 //  end

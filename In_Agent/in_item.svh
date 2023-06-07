@@ -1,5 +1,5 @@
 
-class agent_item extends uvm_sequence_item;
+class in_item extends uvm_sequence_item;
 
   function new(string name="");
     super.new(name);
@@ -9,9 +9,8 @@ class agent_item extends uvm_sequence_item;
   rand kind_t kind=WRITE;
   rand int    Val_A, Val_B;
 
-//`uvm_object_utils(agent_item) 
-//
-  `uvm_object_utils_begin(agent_item) 
+//`uvm_object_utils(in_item) 
+  `uvm_object_utils_begin(in_item) 
     `uvm_field_enum(kind_t, kind, UVM_ALL_ON)
     `uvm_field_int (Val_A, UVM_ALL_ON | UVM_DEC)
     `uvm_field_int (Val_B, UVM_ALL_ON | UVM_DEC)
@@ -42,7 +41,7 @@ class agent_item extends uvm_sequence_item;
 //virtual function void do_copy(uvm_object rhs = null);
 //  super.do_copy(rhs);
 //  begin
-//    agent_item to;
+//    in_item to;
 //    $cast(to,rhs);
 //    to.Val_A = this.Val_A;
 //    to.Val_B = this.Val_B;

@@ -6,11 +6,11 @@
 class scoreboard  extends uvm_scoreboard;
   `uvm_component_utils(scoreboard)
 
-  uvm_analysis_imp_in   #(agent_item , scoreboard)  in_port;
-  uvm_analysis_imp_out  #(result_item, scoreboard) out_port;
+  uvm_analysis_imp_in   #(in_item , scoreboard)  in_port;
+  uvm_analysis_imp_out  #(out_item, scoreboard) out_port;
  
   int m_matches, m_mismatches, m_unexpected;
-  agent_item  q_in[$];
+  in_item  q_in[$];
  
   function new( string name , uvm_component parent) ;
     super.new( name , parent );
@@ -24,11 +24,11 @@ class scoreboard  extends uvm_scoreboard;
     out_port  = new("out_port", this);
   endfunction
  
-  virtual function void write_in(agent_item txn);    
+  virtual function void write_in(in_item txn);    
     q_in.push_back(txn);
   endfunction
 
-  virtual function void write_out(result_item txn);    
+  virtual function void write_out(out_item txn);    
     if (q_in.size() > 0) compare_trans(txn);
     else begin
     //`uvm_error( "Unexpected DUT output : ", txn.convert2string() )
@@ -37,9 +37,9 @@ class scoreboard  extends uvm_scoreboard;
     end
   endfunction
 
-  protected virtual function void compare_trans(result_item tr_dut);
-    agent_item  txn_in;
-    result_item tr_exp;
+  protected virtual function void compare_trans(out_item tr_dut);
+    in_item  txn_in;
+    out_item tr_exp;
     txn_in = q_in.pop_front();
     tr_exp = create_exp( txn_in );
     if (!tr_exp.compare(tr_dut)) begin
@@ -54,8 +54,8 @@ class scoreboard  extends uvm_scoreboard;
     end
   endfunction
 
-  virtual function result_item create_exp(agent_item txn);    
-    result_item exp = result_item::type_id::create("exp");
+  virtual function out_item create_exp(in_item txn);    
+    out_item exp = out_item::type_id::create("exp");
     exp.Val = $unsigned(params_pkg::WIDTH_p'(txn.Val_A + txn.Val_B));
     return(exp);
   endfunction

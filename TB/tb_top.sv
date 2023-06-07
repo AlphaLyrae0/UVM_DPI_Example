@@ -21,9 +21,11 @@ module tb_top;
   //Pass the pointer of interface to UVM test world
   //uvm_config_db #(virtual in_bus_if )::set( null , "uvm_test_top" , "i_bus_vif" , i_if);
   //uvm_config_db #(virtual out_bus_if)::set( null , "uvm_test_top" , "o_bus_vif" , o_if);
+    uvm_config_db #(virtual in_bus_if )::set( uvm_root::get(), "*" , "i_bus_vif" , i_if);
+    uvm_config_db #(virtual out_bus_if)::set( uvm_root::get(), "*" , "o_bus_vif" , o_if);
   //Alternative way to pass the interface pointer 
-    params_pkg::i_vif = i_if;
-    params_pkg::o_vif = o_if;
+  //params_pkg::i_vif = i_if;
+  //params_pkg::o_vif = o_if;
     uvm_pkg::run_test();
   end : main_flow
 

@@ -10,6 +10,8 @@ class out_agent extends uvm_agent;
 
   out_monitor    m_monitor;
 
+  virtual out_bus_if v_if;
+
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     this.mon_ap = new("mon_ap", this);
@@ -18,7 +20,7 @@ class out_agent extends uvm_agent;
 
   virtual function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-    m_monitor.myif = params_pkg::o_vif;
+    m_monitor.myif = this.v_if; //params_pkg::o_vif;
     m_monitor.ap.connect(mon_ap);
   endfunction
 

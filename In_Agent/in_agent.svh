@@ -12,6 +12,8 @@ class in_agent extends uvm_agent;
   in_monitor    m_mon;
   in_driver     m_drv;
 
+  virtual in_bus_if v_if;
+
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     mon_ap = new("mon_ap", this);
@@ -22,8 +24,8 @@ class in_agent extends uvm_agent;
 
   virtual function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-    m_mon.v_if = params_pkg::i_vif;
-    m_drv.v_if = params_pkg::i_vif;
+    m_mon.v_if = this.v_if; //params_pkg::i_vif;
+    m_drv.v_if = this.v_if; //params_pkg::i_vif;
     m_drv.seq_item_port.connect(m_sqr.seq_item_export);
     m_mon.ap.connect(mon_ap);
   endfunction

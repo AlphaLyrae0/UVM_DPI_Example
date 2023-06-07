@@ -16,10 +16,10 @@ TARGET2 := ./xsim.dir/$(TOP).debug/xsimk
 
 .PHONY : run gui all
 all : simple_test dpi_test1 dpi_test2 unite_test
-run : $(TARGET)
+run : $(TARGET) ./dpi_lib.so
 	./axsim.sh          -testplusarg "UVM_TESTNAME=$(TEST_NAME)"
 	mv xsim.log xsim_$(TEST_NAME).log
-gui : $(TARGET2)
+gui : $(TARGET2) ./dpi_lib.so
 	$(SIM) $(TOP).debug -testplusarg "UVM_TESTNAME=$(TEST_NAME)" -gui
 
 .PHONY : simple_test dpi_test1 dpi_test2 unite_test
@@ -48,9 +48,11 @@ COMPILE_FILES += $(WORK)/test_lib_pkg.sdb
 COMPILE_FILES += $(WORK)/in_bus_if.sdb
 COMPILE_FILES += $(WORK)/out_bus_if.sdb
 COMPILE_FILES += $(WORK)/tb_top.sdb
-$(TARGET)  : $(COMPILE_FILES) ./dpi_lib.so
+$(TARGET)  : $(COMPILE_FILES)
+	make ./dpi_lib.so
 	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -snapshot $(TOP).batch -standalone
-$(TARGET2) : $(COMPILE_FILES) ./dpi_lib.so
+$(TARGET2) : $(COMPILE_FILES)
+	make ./dpi_lib.so
 	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -snapshot $(TOP).debug -debug all
 
 ./dpi_lib.so : ./C/dpi_C_seq.cpp ./C/dpi_get_val.cpp ./C/C_Program.cpp

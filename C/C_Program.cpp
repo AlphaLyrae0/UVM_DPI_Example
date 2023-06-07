@@ -10,7 +10,7 @@ extern "C" void C_Program(void)
 {
   int * RDATA;
   cout << "####################################################" << endl;
-  cout << "  C++ function C_Program() was called from SV !!!!" << endl;
+  cout << "  C++ function C_Program() was called from SV !!!!!!" << endl;
   cout << "####################################################" << endl;
   sv_write( 20, 5);
   sv_write(100,15);

@@ -4,6 +4,7 @@
 package test_lib_pkg;
   import uvm_pkg::*;
   import sequence_lib_pkg::*;
+  import in_agent_pkg::*;
   import env_pkg::*;
   `include "test_base.svh"
   `include "simple_test.svh"

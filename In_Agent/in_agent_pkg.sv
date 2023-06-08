@@ -26,9 +26,13 @@ package in_agent_pkg;
   uvm_sequence        m_seq;
 
   task automatic DPI_seq_start(input uvm_sequencer_base sqr_, input uvm_sequence seq_);
+    if ( (m_sqr != null) || (m_seq != null) )
+      `uvm_fatal("in_agent_pkg", "C_Program by another sequence is still running.")
     m_sqr = sqr_;
     m_seq = seq_;
     C_Program();
+    m_sqr = null;
+    m_seq = null;
   endtask
 
   api_write_sequence  api_wr_seq;
@@ -48,6 +52,31 @@ package in_agent_pkg;
   //D = api_rd_seq.Val_R;
   endtask
   //--------------------------------------
+
+  class dpi_start_sequence extends uvm_sequence;
+    `uvm_object_utils(dpi_start_sequence);
+  
+    function new(string name = "");
+      super.new(name);
+    endfunction
+  
+    virtual task pre_body();
+      if ( (m_sqr != null) || (m_seq != null) )
+        `uvm_fatal(get_name(), "C_Program by another sequence is still running.")
+      m_sqr = this.get_sequencer();
+      m_seq = this;
+    endtask
+
+    virtual task body();
+      C_Program();
+    endtask
+  
+    virtual task post_body();
+      m_sqr = null;
+      m_seq = null;
+    endtask
+    
+  endclass
 
 //##############################################################################
 

@@ -60,7 +60,6 @@ $(TARGET2) : $(COMPILE_FILES)
 #	g++ -m32 -fPIC -shared -o dpi_lib.so $^
 
 
-
 #--------------------------------------------------------------------------
 $(WORK)/dut.sdb               : ./DUT/dut.sv
 	$(VLOG) -sv $< -L uvm
@@ -68,45 +67,26 @@ $(WORK)/dut.sdb               : ./DUT/dut.sv
 $(WORK)/params_pkg.sdb        : ./TB/params_pkg.sv
 	$(VLOG) -sv $< -L uvm
 
-$(WORK)/in_agent_pkg.sdb      : ./In_Agent/in_agent.svh
-$(WORK)/in_agent_pkg.sdb      : ./In_Agent/in_driver.svh
-$(WORK)/in_agent_pkg.sdb      : ./In_Agent/in_monitor.svh
-$(WORK)/in_agent_pkg.sdb      : ./In_Agent/in_item.svh
-$(WORK)/in_agent_pkg.sdb      : ./In_Agent/api_write_sequence.svh
-$(WORK)/in_agent_pkg.sdb      : ./In_Agent/in_agent_pkg.sv
+$(WORK)/in_agent_pkg.sdb      : ./In_Agent/in_agent_pkg.sv $(shell ls ./In_Agent/*.svh)
 	$(VLOG) -sv $< -L uvm --include ./In_Agent
 $(WORK)/in_bus_if.sdb         : ./In_Agent/in_bus_if.sv
 	$(VLOG) -sv $< -L uvm
 
-$(WORK)/out_agent_pkg.sdb     : ./Out_Agent/out_agent.svh
-$(WORK)/out_agent_pkg.sdb     : ./Out_Agent/out_monitor.svh
-$(WORK)/out_agent_pkg.sdb     : ./Out_Agent/out_item.svh
-$(WORK)/out_agent_pkg.sdb     : ./Out_Agent/out_agent_pkg.sv
+$(WORK)/out_agent_pkg.sdb     : ./Out_Agent/out_agent_pkg.sv $(shell ls ./Out_Agent/*.svh) 
 	$(VLOG) -sv $< -L uvm --include ./Out_Agent
 $(WORK)/out_bus_if.sdb        : ./Out_Agent/out_bus_if.sv
 	$(VLOG) -sv $< -L uvm
 
-$(WORK)/env_pkg.sdb           : ./Env/env.svh
-$(WORK)/env_pkg.sdb           : ./Env/scoreboard.svh
-$(WORK)/env_pkg.sdb           : ./Env/env_pkg.sv
+$(WORK)/env_pkg.sdb           : ./Env/env_pkg.sv $(shell ls ./Env/*.svh)
 	make $(WORK)/in_agent_pkg.sdb
 	make $(WORK)/out_agent_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Env
 
-$(WORK)/sequence_lib_pkg.sdb  : ./Seq/simple_sequence.svh
-$(WORK)/sequence_lib_pkg.sdb  : ./Seq/dpi_sequence1.svh
-$(WORK)/sequence_lib_pkg.sdb  : ./Seq/dpi_sequence2.svh
-$(WORK)/sequence_lib_pkg.sdb  : ./Seq/unite_sequence.svh
-$(WORK)/sequence_lib_pkg.sdb  : ./Seq/sequence_lib_pkg.sv
+$(WORK)/sequence_lib_pkg.sdb  : ./Seq/sequence_lib_pkg.sv $(shell ls ./Seq/*svh)
 	make $(WORK)/in_agent_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Seq
 
-$(WORK)/test_lib_pkg.sdb      : ./Test/test_base.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/simple_test.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/dpi_test1.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/dpi_test2.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/unite_test.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv
+$(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv $(shell ls ./Test/*.svh)
 	make $(WORK)/env_pkg.sdb
 	make $(WORK)/sequence_lib_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Test

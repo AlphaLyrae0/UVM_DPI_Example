@@ -4,10 +4,10 @@ ELAB       := $(VIVADO_DIR)/xelab
 SIM        := $(VIVADO_DIR)/xsim
 XSC        := $(VIVADO_DIR)/xsc
 
-TOP     := tb_top
-WORK    := ./xsim.dir/work
-TARGET  := ./xsim.dir/$(TOP).batch/axsim ./axsim.sh
-TARGET2 := ./xsim.dir/$(TOP).debug/xsimk
+TOP      := tb_top
+TARGET_A := ./xsim.dir/$(TOP).batch/axsim ./axsim.sh
+TARGET_D := ./xsim.dir/$(TOP).debug/xsimk
+TARGET_C := ./xsim.dir/work/xsc/dpi.so
 
  TEST_NAME := simple_test
 #TEST_NAME := dpi_test1
@@ -16,11 +16,11 @@ TARGET2 := ./xsim.dir/$(TOP).debug/xsimk
 
 .PHONY : run gui all
 all : simple_test dpi_test1 dpi_test2 unite_test
-run : $(TARGET) ./dpi_lib.so
-	./axsim.sh          -testplusarg "UVM_TESTNAME=$(TEST_NAME)"
+run : $(TARGET_A) ./xsim.dir/work/xsc/dpi.so
+	./axsim.sh -testplusarg UVM_TESTNAME=$(TEST_NAME)
 	mv xsim.log xsim_$(TEST_NAME).log
-gui : $(TARGET2) ./dpi_lib.so
-	$(SIM) $(TOP).debug -testplusarg "UVM_TESTNAME=$(TEST_NAME)" -gui
+gui : $(TARGET_D) ./xsim.dir/work/xsc/dpi.so
+	$(SIM) $(TOP).debug -testplusarg UVM_TESTNAME=$(TEST_NAME) -gui
 
 .PHONY : simple_test dpi_test1 dpi_test2 unite_test
 simple_test :
@@ -34,67 +34,53 @@ unite_test :
 
 .PHONY : build build_c
 build : 
-	make -B $(TARGET)
+	make -B $(TARGET_A)
 build_c :
-	make -B ./dpi_lib.so
-
-COMPILE_FILES := $(WORK)/dut.sdb
-COMPILE_FILES += $(WORK)/params_pkg.sdb
-COMPILE_FILES += $(WORK)/in_agent_pkg.sdb
-COMPILE_FILES += $(WORK)/out_agent_pkg.sdb
-COMPILE_FILES += $(WORK)/env_pkg.sdb
-COMPILE_FILES += $(WORK)/sequence_lib_pkg.sdb
-COMPILE_FILES += $(WORK)/test_lib_pkg.sdb
-COMPILE_FILES += $(WORK)/in_bus_if.sdb
-COMPILE_FILES += $(WORK)/out_bus_if.sdb
-COMPILE_FILES += $(WORK)/tb_top.sdb
-$(TARGET)  : $(COMPILE_FILES)
-	make ./dpi_lib.so
-	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -snapshot $(TOP).batch -standalone
-$(TARGET2) : $(COMPILE_FILES)
-	make ./dpi_lib.so
-	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -snapshot $(TOP).debug -debug all
-
-./dpi_lib.so : ./C/dpi_get_val.cpp ./C/C_Program.cpp
-	$(XSC) -o $@ $^
-#	g++ -m32 -fPIC -shared -o dpi_lib.so $^
-
+	make -B ./xsim.dir/work/xsc/dpi.so
+#	make -B  ./dpi_lib.so
 
 #--------------------------------------------------------------------------
-$(WORK)/dut.sdb               : ./DUT/dut.sv
-	$(VLOG) -sv $< -L uvm
+C_FILES += $(shell ls ./C/*.cpp)
+$(TARGET_C) : $(C_FILES)
+	$(XSC) $^
+#./dpi_lib.so : ./C/dpi_get_val.cpp ./C/C_Program.cpp
+#	$(XSC) -o $@ $^
+#	g++ -m32 -fPIC -shared -o dpi_lib.so $^
+#--------------------------------------------------------------------------
 
-$(WORK)/params_pkg.sdb        : ./TB/params_pkg.sv
-	$(VLOG) -sv $< -L uvm
+#--------------------------------------------------------------------------
+SRC_FILES += ./DUT/dut.sv
+SRC_FILES += ./TB/params_pkg.sv
+SRC_FILES += ./In_Agent/in_agent_pkg.sv
+SRC_FILES += ./In_Agent/in_bus_if.sv
+SRC_FILES += ./Out_Agent/out_agent_pkg.sv
+SRC_FILES += ./Out_Agent/out_bus_if.sv
+SRC_FILES += ./Env/env_pkg.sv
+SRC_FILES += ./Seq/sequence_lib_pkg.sv
+SRC_FILES += ./Test/test_lib_pkg.sv
+SRC_FILES += ./TB/tb_top.sv
 
-$(WORK)/in_agent_pkg.sdb      : ./In_Agent/in_agent_pkg.sv $(shell ls ./In_Agent/*.svh)
-	$(VLOG) -sv $< -L uvm --include ./In_Agent
-$(WORK)/in_bus_if.sdb         : ./In_Agent/in_bus_if.sv
-	$(VLOG) -sv $< -L uvm
+INC_FILES +=  $(shell ls ./In_Agent/*.svh)
+INC_FILES +=  $(shell ls ./Out_Agent/*.svh) 
+INC_FILES +=  $(shell ls ./Env/*.svh)
+INC_FILES +=  $(shell ls ./Seq/*svh)
+INC_FILES +=  $(shell ls ./Test/*.svh)
 
-$(WORK)/out_agent_pkg.sdb     : ./Out_Agent/out_agent_pkg.sv $(shell ls ./Out_Agent/*.svh) 
-	$(VLOG) -sv $< -L uvm --include ./Out_Agent
-$(WORK)/out_bus_if.sdb        : ./Out_Agent/out_bus_if.sv
-	$(VLOG) -sv $< -L uvm
+INC_OPT +=  --include ./In_Agent
+INC_OPT +=  --include ./Out_Agent
+INC_OPT +=  --include ./Env
+INC_OPT +=  --include ./Seq
+INC_OPT +=  --include ./Test
 
-$(WORK)/env_pkg.sdb           : ./Env/env_pkg.sv $(shell ls ./Env/*.svh)
-	make $(WORK)/in_agent_pkg.sdb
-	make $(WORK)/out_agent_pkg.sdb
-	$(VLOG) -sv $< -L uvm --include ./Env
+$(TARGET_A) : $(SRC_FILES) $(INC_FILES) ./xsim.dir/work/xsc/dpi.so
+	$(VLOG) -L uvm -sv $(SRC_FILES) $(INC_OPT)
+	$(ELAB) -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).batch -standalone
 
-$(WORK)/sequence_lib_pkg.sdb  : ./Seq/sequence_lib_pkg.sv $(shell ls ./Seq/*svh)
-	make $(WORK)/in_agent_pkg.sdb
-	$(VLOG) -sv $< -L uvm --include ./Seq
+$(TARGET2) : $(SRC_FILES) $(INC_FILES) ./xsim.dir/work/xsc/dpi.so
+	$(VLOG) -L uvm -sv $(SRC_FILES) $(INC_OPT)
+	$(ELAB) -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).debug -debug all
 
-$(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv $(shell ls ./Test/*.svh)
-	make $(WORK)/env_pkg.sdb
-	make $(WORK)/sequence_lib_pkg.sdb
-	$(VLOG) -sv $< -L uvm --include ./Test
-
-$(WORK)/tb_top.sdb            : ./TB/tb_top.sv
-	make $(WORK)/params_pkg.sdb
-	make $(WORK)/test_lib_pkg.sdb
-	$(VLOG) -sv $< -L uvm
+#--------------------------------------------------------------------------
 
 .PHONY: clean
 clean:

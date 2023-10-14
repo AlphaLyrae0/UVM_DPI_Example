@@ -32,11 +32,13 @@ dpi_test2 :
 unite_test :
 	make run TEST_NAME=unite_test
 
-.PHONY : build build_c
-build : 
+.PHONY : build_a build_d build_c
+build_a : 
 	make -B $(TARGET_A)
+build_d : 
+	make -B $(TARGET_D)
 build_c :
-	make -B ./xsim.dir/work/xsc/dpi.so
+	make -B $(TARGET_C)
 #	make -B  ./dpi_lib.so
 
 #--------------------------------------------------------------------------
@@ -73,12 +75,12 @@ INC_OPT +=  --include ./Seq
 INC_OPT +=  --include ./Test
 
 $(TARGET_A) : $(SRC_FILES) $(INC_FILES) ./xsim.dir/work/xsc/dpi.so
-	$(VLOG) -L uvm -sv $(SRC_FILES) $(INC_OPT)
-	$(ELAB) -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).batch -standalone
+	$(VLOG) -incr -L uvm -sv $(SRC_FILES) $(INC_OPT)
+	$(ELAB) -incr -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).batch -standalone
 
-$(TARGET2) : $(SRC_FILES) $(INC_FILES) ./xsim.dir/work/xsc/dpi.so
-	$(VLOG) -L uvm -sv $(SRC_FILES) $(INC_OPT)
-	$(ELAB) -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).debug -debug all
+$(TARGET_D) : $(SRC_FILES) $(INC_FILES) ./xsim.dir/work/xsc/dpi.so
+	$(VLOG) -incr -L uvm -sv $(SRC_FILES) $(INC_OPT)
+	$(ELAB) -incr -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).debug -debug all
 
 #--------------------------------------------------------------------------
 

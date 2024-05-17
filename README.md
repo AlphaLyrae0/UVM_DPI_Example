@@ -1,5 +1,5 @@
 # UVM_DPI_Example
-Example of DPI-C usage in UVM with Vivado simulator (xsim) and Metric DSim Desktop (dsim)
+Example of DPI-C usage in UVM with [AMD (Xilinx) Vivado Simulator](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools.html) (xsim) and [Metrics DSim Desktop](https://www.metrics.ca/) (dsim)
 
 * To compile and run all tests<BR>
 ```> make all```

@@ -48,9 +48,14 @@ _*
 *.vcd
 *.fst
 
-*.dir
-
+xsim.dir
+axsim.sh
 *.log
 *.jou
 *.pb
 *.wdb
+
+dsim_work
+*.env
+*.db
+*.mxd

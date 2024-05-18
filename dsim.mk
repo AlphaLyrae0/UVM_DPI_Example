@@ -1,9 +1,9 @@
 include common.mk
 
 run : dpi_lib.so dsim_work/batch.so 
-	dsim -sv_lib dpi_lib -uvm 1.2 -image batch +UVM_TESTNAME=$(TEST_NAME)
+	dsim -sv_lib dpi_lib -uvm 1.2 -image batch +UVM_TESTNAME=$(TEST_NAME) -l dsim_$(TEST_NAME).log
 dump : dpi_lib.so dsim_work/wave.so
-	dsim -sv_lib dpi_lib -uvm 1.2 -image wave  +UVM_TESTNAME=$(TEST_NAME) -waves waves.mxd
+	dsim -sv_lib dpi_lib -uvm 1.2 -image wave  +UVM_TESTNAME=$(TEST_NAME) -l dsim_$(TEST_NAME).log -waves waves.mxd
 
 compile_batch :
 	make -B dsim_work/batch.so
@@ -13,7 +13,7 @@ compile_c :
 	make -B dpi_lib.so
 
 view_waves :
-	code waves.mxd
+	code -n waves.mxd
 view_log :
 	code dsim.log
 

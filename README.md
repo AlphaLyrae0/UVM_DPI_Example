@@ -2,23 +2,23 @@
 Example of DPI-C usage in UVM with [AMD (Xilinx) Vivado Simulator](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools.html) (xsim) and [Metrics DSim Desktop](https://www.metrics.ca/) (dsim)
 
 ## Usage
-* To compile and run all tests<BR>
+* To compile and run all tests  
 ```> make all```
 
-* To run individual test<BR>
+* To run individual test  
 ```> make <Test Name>```
 
 dsim is automatically used if it is installed and properly setup on your terminal. xsim is used otherwise.
 
 You can edit dsim.mk and/or xsim.mk to accommodate your environment like tool version, path,etc.
 
-For manual simulator selection.<BR>
-```> make dsim_<command>```<BR>
-```> make xsim_<command>```<BR>
+For manual simulator selection.  
+```> make dsim_<command>```  
+```> make xsim_<command>```  
 
-Alternatively,<BR>
-```> make -f dsim.mk <command>```<BR>
-```> make -f xsim.mk <command>```<BR>
+Alternatively,  
+```> make -f dsim.mk <command>```  
+```> make -f xsim.mk <command>```  
   
 ## Test Description
 <dl>

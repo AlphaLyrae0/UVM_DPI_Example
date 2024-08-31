@@ -18,10 +18,10 @@ TARGET_D := ./xsim.dir/$(TOP).debug/xsimk
 TARGET_C := ./xsim.dir/work/xsc/dpi.so
 
 .PHONY : run gui
-run : $(TARGET_A) ./xsim.dir/work/xsc/dpi.so
+run : $(TARGET_A) $(TARGET_C)
 	./axsim.sh -testplusarg UVM_TESTNAME=$(TEST_NAME)
 	mv xsim.log xsim_$(TEST_NAME).log
-gui : $(TARGET_D) ./xsim.dir/work/xsc/dpi.so
+gui : $(TARGET_D) $(TARGET_C)
 	$(SIM) $(TOP).debug -testplusarg UVM_TESTNAME=$(TEST_NAME) -gui
 
 .PHONY : build_a build_d build_c
@@ -40,11 +40,11 @@ INC_OPT += --include ./Env
 INC_OPT += --include ./Seq
 INC_OPT += --include ./Test
 
-$(TARGET_A) : $(SRC_FILES) $(INC_FILES) ./xsim.dir/work/xsc/dpi.so
+$(TARGET_A) : $(SRC_FILES) $(INC_FILES) $(TARGET_C)
 	$(VLOG) -incr -L uvm -sv $(SRC_FILES) $(INC_OPT)
 	$(ELAB) -incr -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).batch -standalone
 
-$(TARGET_D) : $(SRC_FILES) $(INC_FILES) ./xsim.dir/work/xsc/dpi.so
+$(TARGET_D) : $(SRC_FILES) $(INC_FILES) $(TARGET_C)
 	$(VLOG) -incr -L uvm -sv $(SRC_FILES) $(INC_OPT)
 	$(ELAB) -incr -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).debug -debug all
 #--------------------------------------------------------------------------

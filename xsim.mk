@@ -1,10 +1,17 @@
 include common.mk
 
+ifdef XILINX_VIDADO
+VLOG := xvlog
+ELAB := xelab
+SIM  := xsim
+XSC  := xsc
+else
 VIVADO_DIR := /tools/Xilinx/Vivado/2023.1/bin
-VLOG       := $(VIVADO_DIR)/xvlog
-ELAB       := $(VIVADO_DIR)/xelab
-SIM        := $(VIVADO_DIR)/xsim
-XSC        := $(VIVADO_DIR)/xsc
+VLOG := $(VIVADO_DIR)/xvlog
+ELAB := $(VIVADO_DIR)/xelab
+SIM  := $(VIVADO_DIR)/xsim
+XSC  := $(VIVADO_DIR)/xsc
+endif
 
 TARGET_A := ./xsim.dir/$(TOP).batch/axsim ./axsim.sh
 TARGET_D := ./xsim.dir/$(TOP).debug/xsimk

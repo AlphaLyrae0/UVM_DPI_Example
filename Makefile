@@ -1,10 +1,29 @@
 
-## Auto Invoke
+SIMULATOR := DSIM
+ifdef XILINX_VIVADO
+SIMULATOR := XSIM
+endif
 ifdef DSIM_HOME
+SIMULATOR := DSIM
+endif
+ifdef USE_XSIM
+SIMULATOR := XSIM
+endif
+ifdef USE_DSIM
+SIMULATOR := DSIM
+endif
+
+#------------------ Metrics DSim --------------------------------------
+ifeq ($(SIMULATOR),DSIM)
   include dsim.mk
-else
+endif
+#----------------------------------------------------------------------
+
+#------------------ Vivado XSIM ---------------------------------------
+ifeq ($(SIMULATOR),XSIM)
   include xsim.mk
 endif
+#----------------------------------------------------------------------
 
 ## Manual Invoke
 dsim_% :
@@ -22,4 +41,6 @@ dpi_test2   :
 unite_test :
 	make run TEST_NAME=unite_test
 
-clean_all : dsim_clean xsim_clean
+clean :
+	make -f dsim.mk clean
+	make -f xsim.mk clean

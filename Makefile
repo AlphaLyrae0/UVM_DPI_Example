@@ -41,6 +41,6 @@ dpi_test2   :
 unite_test :
 	make run TEST_NAME=unite_test
 
-clean :
+clean_all :
 	make -f dsim.mk clean
 	make -f xsim.mk clean

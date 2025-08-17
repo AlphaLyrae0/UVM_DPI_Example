@@ -21,9 +21,25 @@ Alternatively,
 ```> make -f xsim.mk <command>```  
   
 ## Test Description
-<dl>
-<dt>simple_test</dt>  <dd>Conventional UVM sequence test without DPI-C</dd>
-<dt>dpi_test1</dt>    <dd>C/C++ sequence test with DPI-C</dd>
-<dt>dpi_test2</dt>    <dd>Conventional UVM sequence test which gets values from C/C++ side with DPI-C</dd>
-<dt>unite_test</dt>   <dd>Executes all three sequences above in a row</dd>
-</dl>
+
++ simple_test  
+  Conventional UVM sequence test without DPI-C
++ dpi_test1  
+  C/C++ sequence test with DPI-C
++ dpi_test2  
+  Conventional UVM sequence test which gets values from C/C++ side with DPI-C
++ unite_test  
+  Executes all three sequences above in a row
+
+## DPI-C import/export part
+
+"In_Agent/in_agent_pkg.sv"
+
+```sv
+  import "DPI-C" context function void dpi_get_val(inout int Val_A, Val_B);
+
+ //---------- For C_Program ---------------
+  import "DPI-C" context task C_Program();
+  export "DPI-C" sv_write = task write;
+  export "DPI-C" sv_read  = task read ;
+```

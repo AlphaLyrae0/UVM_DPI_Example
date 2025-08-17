@@ -30,7 +30,7 @@ class in_monitor extends uvm_monitor;
   virtual function void check_bus();
     if(v_if.en) begin
       tr = in_item::type_id::create("tr");
-      this.begin_tr(tr);
+      void'(this.begin_tr(tr));
       tr.Val_A = this.v_if.Val_A;
       tr.Val_B = this.v_if.Val_B;
     //`uvm_info("Monitor", $sformatf("Val_A  : %4d ", this.v_if.Val_A ), UVM_MEDIUM)

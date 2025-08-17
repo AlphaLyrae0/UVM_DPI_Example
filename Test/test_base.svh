@@ -27,12 +27,15 @@ class test_base extends uvm_test;
     m_sequencer = m_env.m_sequencer;
   endfunction : connect_phase
 
-  uvm_factory factory;
 
   virtual function void end_of_elaboration_phase (uvm_phase phase);
+  //uvm_pkg::uvm_top.enable_print_topology = 1;
+  //super.end_of_elaboration_phase(phase);
     uvm_pkg::uvm_top.print_topology();
-    this.factory = uvm_factory::get();
-    this.factory.print();
+    begin
+      uvm_factory factory = uvm_factory::get();
+      factory.print();
+    end
   endfunction
 
 /*--------------

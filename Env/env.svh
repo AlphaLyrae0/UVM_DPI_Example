@@ -29,11 +29,14 @@ class env extends uvm_env;
   endfunction
 
   virtual function void connect_phase(uvm_phase phase);
-    m_sequencer = i_agnt.m_sqr; 
-
+    super.connect_phase(phase);
     i_agnt.mon_ap.connect(m_sb.in_port );
     o_agnt.mon_ap.connect(m_sb.out_port);
-     
+  endfunction
+
+  virtual function void end_of_elaboration_phase(uvm_phase phase);
+    super.end_of_elaboration_phase(phase);
+    m_sequencer = i_agnt.m_sqr; 
   endfunction
 
 endclass

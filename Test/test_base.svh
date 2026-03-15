@@ -22,13 +22,9 @@ class test_base extends uvm_test;
 
   uvm_sequencer_base  m_sequencer;
 
-  virtual function void connect_phase(uvm_phase phase);
-  //if( !uvm_config_db #(virtual bus_if)::get(this, "" , "bus_vif", myif) ) $display("Error") //`uvm_error(...)
-    m_sequencer = m_env.m_sequencer;
-  endfunction : connect_phase
-
-
   virtual function void end_of_elaboration_phase (uvm_phase phase);
+    super.end_of_elaboration_phase(phase);
+    m_sequencer = m_env.m_sequencer;
   //uvm_pkg::uvm_top.enable_print_topology = 1;
   //super.end_of_elaboration_phase(phase);
     uvm_pkg::uvm_top.print_topology();
